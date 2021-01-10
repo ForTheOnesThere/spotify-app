@@ -4,15 +4,15 @@ import './App.css';
 import 'tachyons';
 
 const clientId = 'ebcbc13ca3b34ed6a4cf0bf4d7579df9';
-const redirect = 'http%3A%2F%2F192.168.1.188:3000%2F';
+const redirect = 'https%3A%2F%2Fwww.jamescockayne.co.uk%2Fspotify-app%2F';
 
 const App = () => {
 
   //hooks for state
   const [code, setCode] = useState(null)
-  const [token, setToken] = useState(null)
-  const [refreshToken, setRefreshToken] = useState(null)
-  const [expiry, setExpiry] = useState(null)
+  const [token, setToken] = useState(null) // eslint-disable-next-line 
+  const [refreshToken, setRefreshToken] = useState(null) // eslint-disable-next-line 
+  const [expiry, setExpiry] = useState(null) // eslint-disable-next-line 
   const [requestTime, setRequestTime] = useState(null)
   const [userDisplayName, setUserDisplayName] = useState(null)
   const [userProduct, setUserProduct] = useState(null)
@@ -104,22 +104,7 @@ const App = () => {
         <button style={{'margin': '10%'}} onClick={()=>window.location.replace(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirect}&show_dialog=true&scope=user-read-private%20user-library-read`)}>Connect to Spotify!</button>
       </div>
     : <div className="App">
-        <p>
-          Connected to Spotify.
-        </p>
-        <p>
-          The code is: {code}
-        </p>
-        <p>
-          The access token is: {token}
-        </p>
-        <p>
-          The refresh token is: {refreshToken}
-        </p>
-        <p>
-          The token was recieved at {requestTime} and is valid for {expiry} seconds.
-        </p>
-        <button style={{'margin': '3%'}} onClick={getUserData}>Do something!</button>
+        <button style={{'margin': '3%'}} onClick={getUserData}>Get Account Information</button>
         <p>
           Your name is: {userDisplayName}<br />
           Product: {userProduct}<br />
