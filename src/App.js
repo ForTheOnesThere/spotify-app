@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import AlbumList from './components/AlbumList/AlbumList.js'
 import './App.css';
+import 'tachyons';
 
 const clientId = 'ebcbc13ca3b34ed6a4cf0bf4d7579df9';
-const redirect = 'http%3A%2F%2Flocalhost:3000%2F';
+const redirect = 'http%3A%2F%2F192.168.1.188:3000%2F';
 
 const App = () => {
 
@@ -15,6 +17,7 @@ const App = () => {
   const [userDisplayName, setUserDisplayName] = useState(null)
   const [userProduct, setUserProduct] = useState(null)
   const [userProfileUrl, setUserProfileUrl] = useState(null)
+  const [userAlbums, setUserAlbums] = useState(null)
 
   //Make request for API token on page load if there is a query string on the url
   useEffect(() => {
@@ -70,12 +73,35 @@ const App = () => {
       .catch(console.log)
   }
 
+  const getUserAlbums = () => {
+    fetch('https://api.spotify.com/v1/me/albums?limit=50', {
+        method: 'GET',
+        headers: {'Authorization': `Bearer ${token}`},
+      })
+      .then(response => response.json())
+      .then(albums => {
+        handleAlbums(albums.items)
+      })
+  }
+
+  const handleAlbums = (rawAlbumList) => {
+    let albumList = rawAlbumList.map(item => {
+      return {
+        name: item.album.name,
+        image: item.album.images[0].url,
+        popularity: item.album.popularity,
+        id: item.album.id
+      } 
+    })
+    setUserAlbums(albumList)
+  }
+
   return (
     //if there is no code stored, then the user must have no have logged in, so show them a 'connect' button
     //else, they must have logged in, so show the credentials returned from the Spotify accounts service
     code===null
     ? <div className="App">
-        <button style={{'margin': '10%'}} onClick={()=>window.location.replace(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirect}&show_dialog=true&scope=user-read-private`)}>Connect to Spotify!</button>
+        <button style={{'margin': '10%'}} onClick={()=>window.location.replace(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirect}&show_dialog=true&scope=user-read-private%20user-library-read`)}>Connect to Spotify!</button>
       </div>
     : <div className="App">
         <p>
@@ -94,12 +120,13 @@ const App = () => {
           The token was recieved at {requestTime} and is valid for {expiry} seconds.
         </p>
         <button style={{'margin': '3%'}} onClick={getUserData}>Do something!</button>
-          <p>
-            Your name is: {userDisplayName}<br />
-            Product: {userProduct}<br />
-            Your profile can be found <a href={userProfileUrl}>here.</a>
-          </p>
-      
+        <p>
+          Your name is: {userDisplayName}<br />
+          Product: {userProduct}<br />
+          Your profile can be found <a href={userProfileUrl}>here.</a>
+        </p>
+        <button style={{'margin': '3%'}} onClick={getUserAlbums}>Get Albums!</button>
+        <AlbumList userAlbums={userAlbums}/>
       </div>
   )  
 }
