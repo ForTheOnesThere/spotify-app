@@ -12,6 +12,9 @@ const App = () => {
   const [refreshToken, setRefreshToken] = useState(null)
   const [expiry, setExpiry] = useState(null)
   const [requestTime, setRequestTime] = useState(null)
+  const [userDisplayName, setUserDisplayName] = useState(null)
+  const [userProduct, setUserProduct] = useState(null)
+  const [userProfileUrl, setUserProfileUrl] = useState(null)
 
   //Make request for API token on page load if there is a query string on the url
   useEffect(() => {
@@ -48,15 +51,31 @@ const App = () => {
         setExpiry(response.expires_in)
         setToken(response.access_token)
         setRefreshToken(response.refresh_token)
-      })    
+      })
+      .catch(console.log)  
+  }
+
+  //make a request for profile data and update state with basic details
+  const getUserData = () => {
+    fetch('https://api.spotify.com/v1/me', {
+        method: 'GET',
+        headers: {'Authorization': `Bearer ${token}`},
+      })
+      .then(response => response.json())
+      .then(user =>{
+        setUserDisplayName(user.display_name)
+        setUserProduct(user.product)
+        setUserProfileUrl(user.external_urls.spotify)
+      })
+      .catch(console.log)
   }
 
   return (
-    //if there is no code stored, then the user must have no have logged in, so show them a 'connect' button.
-    //else, they must have logged in, so show the credentials returned from the Spotify accounts service.
+    //if there is no code stored, then the user must have no have logged in, so show them a 'connect' button
+    //else, they must have logged in, so show the credentials returned from the Spotify accounts service
     code===null
     ? <div className="App">
-        <button style={{'margin': '10%'}} onClick={()=>window.location.replace(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirect}&show_dialog=true`)}>Connect to Spotify!</button>
+        <button style={{'margin': '10%'}} onClick={()=>window.location.replace(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirect}&show_dialog=true&scope=user-read-private`)}>Connect to Spotify!</button>
       </div>
     : <div className="App">
         <p>
@@ -74,6 +93,13 @@ const App = () => {
         <p>
           The token was recieved at {requestTime} and is valid for {expiry} seconds.
         </p>
+        <button style={{'margin': '3%'}} onClick={getUserData}>Do something!</button>
+          <p>
+            Your name is: {userDisplayName}<br />
+            Product: {userProduct}<br />
+            Your profile can be found <a href={userProfileUrl}>here.</a>
+          </p>
+      
       </div>
   )  
 }
