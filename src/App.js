@@ -65,18 +65,14 @@ const App = () => {
   }
 
   //make a request for profile data and update state with basic details
-  const getUserData = () => {
-    fetch('https://api.spotify.com/v1/me', {
-        method: 'GET',
-        headers: {'Authorization': `Bearer ${token}`},
-      })
-      .then(response => response.json())
-      .then(user =>{
-        setUserDisplayName(user.display_name)
-        setUserProduct(user.product)
-        setUserProfileUrl(user.external_urls.spotify)
-      })
-      .catch(console.log)
+  const getUserData = async () => {
+    try {
+      let response = await fetch('https://api.spotify.com/v1/me', GEToptions)
+      let user = await response.json()  
+      setUserDisplayName(user.display_name)
+      setUserProduct(user.product)
+      setUserProfileUrl(user.external_urls.spotify)
+    } catch(e){console.log(e)}  
   }
 
   const getUserAlbums = async () => {
