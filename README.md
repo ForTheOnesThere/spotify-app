@@ -1,1 +1,1 @@
-This project was bootstrapped with Create React App
+This project links with a user's Spotify account and shows them some interesting details.
