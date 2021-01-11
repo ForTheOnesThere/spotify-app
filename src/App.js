@@ -19,6 +19,12 @@ const App = () => {
   const [userProfileUrl, setUserProfileUrl] = useState(null)
   const [userAlbums, setUserAlbums] = useState(null)
 
+  //global options parameter for GET requests
+  const GEToptions = {
+    method: 'GET',
+    headers: {'Authorization': `Bearer ${token}`},
+  }
+
   //Make request for API token on page load if there is a query string on the url
   useEffect(() => {
     (window.location.search !== "")?parseUrl():console.log('Please link with Spotify')
@@ -73,15 +79,25 @@ const App = () => {
       .catch(console.log)
   }
 
-  const getUserAlbums = () => {
-    fetch('https://api.spotify.com/v1/me/albums?limit=50', {
-        method: 'GET',
-        headers: {'Authorization': `Bearer ${token}`},
-      })
-      .then(response => response.json())
-      .then(albums => {
-        handleAlbums(albums.items)
-      })
+  const getUserAlbums = async () => {
+    //start with no albums, and make the first request from offset=0
+    let allAlbums = []
+    let offset = 0
+
+    //spotify limits album requests to 50 at a time, so...
+    //if the number of albums is a multiple of 50, make another request for the next 50, by specifying the offset
+    //Eventually the albums stop coming in 50s and we are done
+    //For the edge case that the number required is a multiple of 50, we check if each batch is blank. If so, we are done. 
+    while ((allAlbums.length % 50) === 0){
+      let response = await fetch(`https://api.spotify.com/v1/me/albums?offset=${offset}&limit=50`, GEToptions)
+      let albums = await response.json()
+      if (albums.items.length === 0){break}
+      allAlbums = allAlbums.concat(albums.items)
+      offset += 50
+    } 
+
+    //process the complete album list
+    handleAlbums(allAlbums)
   }
 
   const handleAlbums = (rawAlbumList) => {
