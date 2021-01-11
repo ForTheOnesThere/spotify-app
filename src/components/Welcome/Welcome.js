@@ -6,10 +6,9 @@ const Welcome = (props) => {
 
   return(
       <div >
-        <p >
-        Your name is: {userDisplayName}<br />
-        Your profile can be found <a href={userProfileUrl}>here.</a>
-        </p>
+        <h1>
+          Hi there, <a href={userProfileUrl}>{userDisplayName}</a><br />
+        </h1>
       </div>
   )
 }

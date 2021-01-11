@@ -18,19 +18,21 @@ const App = () => {
   const [requestTime, setRequestTime] = useState(null)
   const [userDisplayName, setUserDisplayName] = useState('Loading...') // eslint-disable-next-line 
   const [userProduct, setUserProduct] = useState(null)
-  const [userProfileUrl, setUserProfileUrl] = useState('null')
+  const [userProfileUrl, setUserProfileUrl] = useState(null)
   const [userAlbums, setUserAlbums] = useState(null)
 
-  //global options parameter for GET requests
-  const GEToptions = {
-    method: 'GET',
-    headers: {'Authorization': `Bearer ${token}`},
+  //global options parameter for GET requests, take a token, and return an object with the right header
+  //defaults to using the token from app state, but can be custom
+  const GEToptions = (inputToken = token) => {
+    return ({
+      method: 'GET',
+      headers: {'Authorization': `Bearer ${inputToken}`}
+    })
   }
 
-  //Make request for API token on page load if there is a query string on the url
+  //request for the url to be parsed if there is a query string on page load
   useEffect(() => {
-    (window.location.search !== "")?parseUrl():console.log('Please link with Spotify')
-    // eslint-disable-next-line
+    (window.location.search !== "")?parseUrl():console.log('Please link with Spotify') // eslint-disable-next-line
   },[])
 
   //grab the code parameter from the query string and pass it to getAccessToken()
@@ -42,31 +44,33 @@ const App = () => {
   }
 
   //send the code to the backend and update the state with the results
-  const getAccessToken = (recievedCode) => {
-      fetch('https://spotify-test-project.herokuapp.com', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          code: recievedCode,
-          clientId: clientId,
-          redirect: redirect
-        })
+  const getAccessToken = async (recievedCode) => {
+    let rawResponse = await fetch('https://spotify-test-project.herokuapp.com', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        code: recievedCode,
+        clientId: clientId,
+        redirect: redirect
       })
-      .then(res => res.json())
-      .then(response => {
-        console.log('ran getAccessToken()')
-        setRequestTime(new Date().toString())
-        setExpiry(response.expires_in)
-        setToken(response.access_token)
-        setRefreshToken(response.refresh_token)
-      })
-      .catch(console.log)
+    })
+
+    let response = await rawResponse.json()
+
+    try {
+      setRequestTime(new Date())
+      setExpiry(response.expires_in)
+      setToken(response.access_token)
+      setRefreshToken(response.refresh_token) 
+      //get the user's profile with the token we just recieved, because the default value of token here comes back as blank
+      getUserDataOnInit(response.access_token)  
+    } catch(e){console.log(e)}
   }
 
   //make a request for profile data and update state with basic details
-  const getUserData = async () => {
+  const getUserDataOnInit = async (inputToken) => {
     try {
-      let response = await fetch('https://api.spotify.com/v1/me', GEToptions)
+      let response = await fetch('https://api.spotify.com/v1/me', GEToptions(inputToken))
       let user = await response.json()  
       setUserDisplayName(user.display_name)
       setUserProduct(user.product)
@@ -84,7 +88,7 @@ const App = () => {
     //Eventually the albums stop coming in 50s and we are done
     //For the edge case that the number required is a multiple of 50, we check if each batch is blank. If so, we are done. 
     while ((allAlbums.length % 50) === 0){
-      let response = await fetch(`https://api.spotify.com/v1/me/albums?offset=${offset}&limit=50`, GEToptions)
+      let response = await fetch(`https://api.spotify.com/v1/me/albums?offset=${offset}&limit=50`, GEToptions())
       let albums = await response.json()
       if (albums.items.length === 0){break}
       allAlbums = allAlbums.concat(albums.items)
@@ -108,13 +112,12 @@ const App = () => {
   }
 
   return (
-    //if there is no code stored, then the user must have not have logged in, so show them a 'connect' button
-    //else, they must have logged in, so show the credentials returned from the Spotify accounts service
+    //if there is no code stored, then the user must have not have logged in, or has refused to grant access, so show them a 'connect' button
+    //else, they must have logged in, so show the app
     code===null
     ? <Splashscreen clientId={clientId} redirect={redirect}/>
     : <div className="App">
         <Welcome userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
-        <button style={{'margin': '3%'}} onClick={getUserData}>Get Account Information</button>
         <button style={{'margin': '3%'}} onClick={getUserAlbums}>Get Albums!</button>
         <AlbumList userAlbums={userAlbums}/>
       </div>
