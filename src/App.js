@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import AlbumList from './components/AlbumList/AlbumList.js'
+import Splashscreen from './components/Splashscreen/Splashscreen.js'
+import Welcome from './components/Welcome/Welcome.js'
 import './App.css';
 import 'tachyons';
 
@@ -14,9 +16,9 @@ const App = () => {
   const [refreshToken, setRefreshToken] = useState(null) // eslint-disable-next-line 
   const [expiry, setExpiry] = useState(null) // eslint-disable-next-line 
   const [requestTime, setRequestTime] = useState(null)
-  const [userDisplayName, setUserDisplayName] = useState(null)
+  const [userDisplayName, setUserDisplayName] = useState('Loading...') // eslint-disable-next-line 
   const [userProduct, setUserProduct] = useState(null)
-  const [userProfileUrl, setUserProfileUrl] = useState(null)
+  const [userProfileUrl, setUserProfileUrl] = useState('null')
   const [userAlbums, setUserAlbums] = useState(null)
 
   //global options parameter for GET requests
@@ -35,8 +37,6 @@ const App = () => {
   const parseUrl = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const recievedCode = urlParams.get('code')
-    //console.log('ran parseUrl, code was ')
-    //console.log(recievedCode)
     setCode(recievedCode)
     getAccessToken(recievedCode)
   }
@@ -55,13 +55,12 @@ const App = () => {
       .then(res => res.json())
       .then(response => {
         console.log('ran getAccessToken()')
-        //console.log(response.access_token)
         setRequestTime(new Date().toString())
         setExpiry(response.expires_in)
         setToken(response.access_token)
         setRefreshToken(response.refresh_token)
       })
-      .catch(console.log)  
+      .catch(console.log)
   }
 
   //make a request for profile data and update state with basic details
@@ -109,19 +108,13 @@ const App = () => {
   }
 
   return (
-    //if there is no code stored, then the user must have no have logged in, so show them a 'connect' button
+    //if there is no code stored, then the user must have not have logged in, so show them a 'connect' button
     //else, they must have logged in, so show the credentials returned from the Spotify accounts service
     code===null
-    ? <div className="App">
-        <button style={{'margin': '10%'}} onClick={()=>window.location.replace(`https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirect}&show_dialog=true&scope=user-read-private%20user-library-read`)}>Connect to Spotify!</button>
-      </div>
+    ? <Splashscreen clientId={clientId} redirect={redirect}/>
     : <div className="App">
+        <Welcome userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
         <button style={{'margin': '3%'}} onClick={getUserData}>Get Account Information</button>
-        <p>
-          Your name is: {userDisplayName}<br />
-          Product: {userProduct}<br />
-          Your profile can be found <a href={userProfileUrl}>here.</a>
-        </p>
         <button style={{'margin': '3%'}} onClick={getUserAlbums}>Get Albums!</button>
         <AlbumList userAlbums={userAlbums}/>
       </div>
