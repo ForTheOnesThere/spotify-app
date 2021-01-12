@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import AlbumList from './components/AlbumList/AlbumList.js'
-import Splashscreen from './components/Splashscreen/Splashscreen.js'
-import Welcome from './components/Welcome/Welcome.js'
+import AlbumList from './components/AlbumList/AlbumList.js';
+import Splashscreen from './components/Splashscreen/Splashscreen.js';
+import Welcome from './components/Welcome/Welcome.js';
+import AlbumView from './components/AlbumView/AlbumView.js'
 import './App.css';
 import 'tachyons';
 
@@ -20,6 +21,8 @@ const App = () => {
   const [userProduct, setUserProduct] = useState(null)
   const [userProfileUrl, setUserProfileUrl] = useState(null)
   const [userAlbums, setUserAlbums] = useState(null)
+  const [isAlbumLoaded, setIsAlbumLoaded] = useState(false)
+  const [loadedAlbum, setLoadedAlbum] = useState({})
 
   //global options parameter for GET requests, take a token, and return an object with the right header
   //defaults to using the token from app state, but can be custom
@@ -111,16 +114,41 @@ const App = () => {
     setUserAlbums(albumList)
   }
 
+  const getAlbumTracks = async (albumId) => {
+    console.log('running getAlbumTracks()')
+    
+    //make the request for the album whose id has been passed
+    let response = await fetch(`https://api.spotify.com/v1/albums/${albumId}/tracks`, GEToptions())
+    let rawTracks = await response.json()
+
+    //process the response into a simpler array
+    let tracks = rawTracks.items.map(track => {
+      return {
+        name: track.name,
+        length: track.duration_ms,
+        id: track.id,
+        link: track.external_urls.spotify
+      }
+    })
+
+    //update state
+    setLoadedAlbum(tracks)
+    setIsAlbumLoaded(true)
+  }
+
   return (
     //if there is no code stored, then the user must have not have logged in, or has refused to grant access, so show them a 'connect' button
     //else, they must have logged in, so show the app
     code===null
     ? <Splashscreen clientId={clientId} redirect={redirect}/>
-    : <div className="App">
-        <Welcome userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
-        <button style={{'margin': '3%'}} onClick={getUserAlbums}>Get Albums!</button>
-        <AlbumList userAlbums={userAlbums}/>
-      </div>
+    : (isAlbumLoaded)
+      ? <AlbumView loadedAlbum={loadedAlbum}/>
+      : <div className="App">
+          <Welcome userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
+          <button style={{'margin': '3%'}} onClick={getUserAlbums}>Get Albums!</button>
+          <button style={{'margin': '3%'}} onClick={()=>{getAlbumTracks(userAlbums[0].id)}}>get album tracks</button>
+          <AlbumList userAlbums={userAlbums} getAlbumTracks={getAlbumTracks}/>
+        </div>
   )  
 }
 

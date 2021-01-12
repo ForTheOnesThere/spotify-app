@@ -3,7 +3,7 @@ import AlbumCard from '../AlbumCard/AlbumCard.js';
 
 const AlbumList = (props) => {
 
-const { userAlbums } = props;
+const { userAlbums, getAlbumTracks } = props;
 
 useEffect(()=>{
   if (userAlbums){popColor()}
@@ -30,7 +30,7 @@ if (userAlbums) {
     return(
         <div id='AlbumList' style={{display: 'flex',flexWrap: 'wrap',justifyContent: 'space-around'}}>
             {userAlbums.map(album => {
-                return <AlbumCard key={album.id} name={album.name} image={album.image} popularity={album.popularity}/>
+                return <AlbumCard key={album.id} id={album.id} name={album.name} image={album.image} popularity={album.popularity} getAlbumTracks={getAlbumTracks}/>
             })}
             <div onLoad={popColor}></div>
         </div>
