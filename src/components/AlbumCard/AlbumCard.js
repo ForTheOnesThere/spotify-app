@@ -9,16 +9,13 @@ const { name, image, popularity } = props
       <img  src={image} className="db w-100 br2 br--top" alt="Album art"/>
       <div className="pa2 ph3-ns pb3-ns">
         <div className="dt w-100 mt1">
-          <div className="dtc">
+          <div className="dtc w-90">
             <h1 className="f5 f4-ns mv0">{name}</h1>
           </div>
-          <div className="dtc tr">
-            <h2 className="f5 mv0">{popularity}</h2>
+          <div className="dtc tr w-10">
+            <h2 className="f5 mv0 popularity">{popularity}</h2>
           </div>
         </div>
-        <p className="f6 lh-copy measure mt2 mid-gray">
-          This is an album
-        </p>
       </div>
     </div>
   )
