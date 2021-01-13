@@ -136,17 +136,22 @@ const App = () => {
     setIsAlbumLoaded(true)
   }
 
+  //clear the album in state, taking the user back to library view
+  const clearAlbum = () => {
+    setIsAlbumLoaded(false)
+    setLoadedAlbum({})
+  }
+
   return (
     //if there is no code stored, then the user must have not have logged in, or has refused to grant access, so show them a 'connect' button
     //else, they must have logged in, so show the app
     code===null
     ? <Splashscreen clientId={clientId} redirect={redirect}/>
     : (isAlbumLoaded)
-      ? <AlbumView loadedAlbum={loadedAlbum}/>
+      ? <AlbumView loadedAlbum={loadedAlbum} clearAlbum={clearAlbum}/>
       : <div className="App">
           <Welcome userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
           <button style={{'margin': '3%'}} onClick={getUserAlbums}>Get Albums!</button>
-          <button style={{'margin': '3%'}} onClick={()=>{getAlbumTracks(userAlbums[0].id)}}>get album tracks</button>
           <AlbumList userAlbums={userAlbums} getAlbumTracks={getAlbumTracks}/>
         </div>
   )  

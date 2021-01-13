@@ -2,7 +2,8 @@ import React from 'react';
 
 const AlbumView = (props) => {
   
-  const { loadedAlbum } = props
+  const { loadedAlbum, clearAlbum } = props
+  
 
   return (
     <div className="Album Tracks">
@@ -11,6 +12,7 @@ const AlbumView = (props) => {
                 name: {item.name}, length: {item.length}ms, <a href={item.link}>view on spotify</a><br />
                </div>
       })}
+      <button className='back-btn-to-lib' onClick={clearAlbum}>Go back</button>
     </div>
   )
 
