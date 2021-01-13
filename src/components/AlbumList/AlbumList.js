@@ -3,9 +3,10 @@ import AlbumCard from '../AlbumCard/AlbumCard.js';
 
 const AlbumList = (props) => {
 
-const { userAlbums, getAlbumTracks } = props;
+const { userAlbums, getAlbumTracks, scrollPosition } = props;
 
 useEffect(()=>{
+  window.scrollTo({top: scrollPosition, behavior: 'auto'})
   if (userAlbums){popColor()}
 })
 

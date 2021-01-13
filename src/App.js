@@ -23,6 +23,7 @@ const App = () => {
   const [userAlbums, setUserAlbums] = useState(null)
   const [isAlbumLoaded, setIsAlbumLoaded] = useState(false)
   const [loadedAlbum, setLoadedAlbum] = useState({})
+  const [scrollPosition, setScrollPosition] = useState(0)
 
   //global options parameter for GET requests, take a token, and return an object with the right header
   //defaults to using the token from app state, but can be custom
@@ -132,6 +133,7 @@ const App = () => {
     })
 
     //update state
+    setScrollPosition(window.pageYOffset)
     setLoadedAlbum(tracks)
     setIsAlbumLoaded(true)
   }
@@ -152,7 +154,7 @@ const App = () => {
       : <div className="App">
           <Welcome userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
           <button style={{'margin': '3%'}} onClick={getUserAlbums}>Get Albums!</button>
-          <AlbumList userAlbums={userAlbums} getAlbumTracks={getAlbumTracks}/>
+          <AlbumList scrollPosition={scrollPosition} userAlbums={userAlbums} getAlbumTracks={getAlbumTracks}/>
         </div>
   )  
 }
