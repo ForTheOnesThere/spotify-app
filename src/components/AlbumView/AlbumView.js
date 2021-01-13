@@ -1,18 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import './AlbumView.css';
 
 const AlbumView = (props) => {
   
-  const { loadedAlbum, clearAlbum } = props
-  
+const { loadedAlbum, clearAlbum } = props
 
+useEffect(()=>{window.scrollTo({top:0, behavior: 'auto'})},[])
+  
+//<a href={item.link}>view on spotify</a>
+//length: {item.length}ms,
   return (
-    <div className="Album Tracks">
+    <div className="album-tracks">
+      <div className={'track text-center grow'} onClick={clearAlbum}>
+        BACK
+      </div>
       {loadedAlbum.map(item => {
-        return <div key={item.id}>
-                name: {item.name}, length: {item.length}ms, <a href={item.link}>view on spotify</a><br />
+        return <div key={item.id} className='track text-center grow'>
+                {item.name}  <br />
                </div>
       })}
-      <button className='back-btn-to-lib' onClick={clearAlbum}>Go back</button>
+      
     </div>
   )
 

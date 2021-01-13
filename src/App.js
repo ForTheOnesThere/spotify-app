@@ -3,11 +3,13 @@ import AlbumList from './components/AlbumList/AlbumList.js';
 import Splashscreen from './components/Splashscreen/Splashscreen.js';
 import Welcome from './components/Welcome/Welcome.js';
 import AlbumView from './components/AlbumView/AlbumView.js'
+import Particles from 'react-particles-js';
 import './App.css';
 import 'tachyons';
 
 const clientId = 'ebcbc13ca3b34ed6a4cf0bf4d7579df9';
 const redirect = 'http%3A%2F%2F192.168.1.188:3000%2F';
+
 
 const App = () => {
 
@@ -33,6 +35,9 @@ const App = () => {
       headers: {'Authorization': `Bearer ${inputToken}`}
     })
   }
+
+  //parameters for the particles background
+  const particlesConfig = require('./particlesjs-config.json')
 
   //request for the url to be parsed if there is a query string on page load
   useEffect(() => {
@@ -144,18 +149,26 @@ const App = () => {
     setLoadedAlbum({})
   }
 
+
   return (
+    <div>
+      <Particles params={particlesConfig} className='particles'/>
+      {(code===null)
+        ? <Splashscreen clientId={clientId} redirect={redirect}/>
+        : ((isAlbumLoaded)
+            ? <AlbumView loadedAlbum={loadedAlbum} clearAlbum={clearAlbum}/>
+            : <div className="App">
+                
+                <Welcome userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
+                <button style={{'margin': '3%'}} onClick={getUserAlbums}>Get Albums!</button>
+                <AlbumList scrollPosition={scrollPosition} userAlbums={userAlbums} getAlbumTracks={getAlbumTracks}/>
+              </div>
+          )
+      }   
+    </div>
     //if there is no code stored, then the user must have not have logged in, or has refused to grant access, so show them a 'connect' button
     //else, they must have logged in, so show the app
-    code===null
-    ? <Splashscreen clientId={clientId} redirect={redirect}/>
-    : (isAlbumLoaded)
-      ? <AlbumView loadedAlbum={loadedAlbum} clearAlbum={clearAlbum}/>
-      : <div className="App">
-          <Welcome userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
-          <button style={{'margin': '3%'}} onClick={getUserAlbums}>Get Albums!</button>
-          <AlbumList scrollPosition={scrollPosition} userAlbums={userAlbums} getAlbumTracks={getAlbumTracks}/>
-        </div>
+   
   )  
 }
 
