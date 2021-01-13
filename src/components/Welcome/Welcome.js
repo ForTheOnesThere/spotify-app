@@ -1,13 +1,14 @@
 import {React} from 'react';
+import './Welcome.css'
 
 const Welcome = (props) => {
 
   const { userProfileUrl, userDisplayName } = props
 
   return(
-      <div >
+      <div className='welcome'>
         <h1>
-          Hi there, <a href={userProfileUrl}>{userDisplayName}</a><br />
+          Welcome, {userDisplayName}.<br />
         </h1>
       </div>
   )
