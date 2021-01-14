@@ -1,14 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './AlbumView.css';
 
 const AlbumView = (props) => {
   
 const { loadedAlbum, clearAlbum } = props
-
-//useEffect(()=>{window.scrollTo({top:0, behavior: 'auto'})},[])
-  
-//<a href={item.link}>view on spotify</a>
-//length: {item.length}ms,
 
   return (
     <div className="album-tracks">

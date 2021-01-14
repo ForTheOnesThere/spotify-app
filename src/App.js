@@ -23,10 +23,7 @@ const App = () => {
   const [userProduct, setUserProduct] = useState(null)
   const [userProfileUrl, setUserProfileUrl] = useState(null)
   const [userAlbums, setUserAlbums] = useState(null)
-  const [isAlbumLoaded, setIsAlbumLoaded] = useState(false)
   const [loadedAlbum, setLoadedAlbum] = useState([])
-  const [scrollPosition, setScrollPosition] = useState(0)
-  const [shouldAnimate, setShouldAnimate] = useState(true)
 
   //global options parameter for GET requests, take a token, and return an object with the right header
   //defaults to using the token from app state, but can be custom
@@ -42,8 +39,6 @@ const App = () => {
 
   //request for the url to be parsed if there is a query string on page load
   useEffect(() => {
-    window.localStorage.clear()
-    window.localStorage.setItem('page-loaded-once', 0);
     (window.location.search !== "")?parseUrl():console.log('Please link with Spotify') // eslint-disable-next-line
   },[])
 
@@ -98,9 +93,9 @@ const App = () => {
     let offset = 0
 
     //spotify limits album requests to 50 at a time, so...
-    //if the number of albums is a multiple of 50, make another request for the next 50, by specifying the offset
+    //if the number of albums recieved so far is a multiple of 50, make another request for the next 50, by specifying the offset
     //Eventually the albums stop coming in 50s and we are done
-    //For the edge case that the number required is a multiple of 50, we check if each batch is blank. If so, we are done. 
+    //For the edge case that the final number required is a multiple of 50, we check if each batch is blank. If so, we are done. 
     while ((allAlbums.length % 50) === 0){
       let response = await fetch(`https://api.spotify.com/v1/me/albums?offset=${offset}&limit=50`, GEToptions(inputToken))
       let albums = await response.json()
@@ -141,33 +136,15 @@ const App = () => {
         link: track.external_urls.spotify
       }
     })
-
+    setLoadedAlbum(tracks)
     document.getElementsByTagName('body')[0].style.overflow = 'hidden' 
     document.getElementsByClassName('overlay')[0].classList.add('show')
-    
-    //update state
-    //setScrollPosition(window.pageYOffset)
-    //console.log('set scroll pos to, ', window.pageYOffset )
-    setLoadedAlbum(tracks)
-   //setIsAlbumLoaded(true)
   }
 
-  //clear the album in state, taking the user back to library view
+  //hide the overlay to go back to library view
   const clearAlbum = () => {
-    setIsAlbumLoaded(false)
-    //setLoadedAlbum([])
     document.getElementsByTagName('body')[0].style.overflow = 'visible'
     document.getElementsByClassName('overlay')[0].classList.remove('show')
-  }
-
-
-  const checkLoad = () =>{
-    let count = window.localStorage.getItem('page-loaded-once')
-    count++
-    window.localStorage.setItem('page-loaded-once', count)
-    if (count > 1) {
-      setShouldAnimate(false)
-    }
   }
 
   //if there is no code stored, then the user must have not have logged in, or has refused to grant access, so show them a 'connect' button
@@ -181,8 +158,8 @@ const App = () => {
             <div className={'overlay hide'}>
               <AlbumView loadedAlbum={loadedAlbum} clearAlbum={clearAlbum}/>
             </div>
-            <Welcome shouldAnimate={shouldAnimate} userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
-            <AlbumList checkLoad={checkLoad} shouldAnimate={shouldAnimate} scrollPosition={scrollPosition} userAlbums={userAlbums} getAlbumTracks={getAlbumTracks}/>     
+            <Welcome userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
+            <AlbumList userAlbums={userAlbums} getAlbumTracks={getAlbumTracks}/>     
           </div>     
       }   
     </div>

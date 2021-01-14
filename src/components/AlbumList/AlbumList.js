@@ -4,20 +4,12 @@ import './AlbumList.css';
 
 const AlbumList = (props) => {
 
-const { userAlbums, getAlbumTracks, scrollPosition, shouldAnimate, checkLoad } = props;
+const { userAlbums, getAlbumTracks} = props;
 
 useEffect(()=>{
   console.log('useeffect ran on album list')
-  
   if (userAlbums){popColor()}
 })
-
-
-useEffect(()=>{
-  checkLoad() 
-  window.scrollTo({top: scrollPosition, behavior: 'auto'}) // eslint-disable-next-line
-},[])
-
 
 //run through the album cards and set the color of the popularity text based on score
 const popColor = () => {
@@ -38,7 +30,7 @@ const popColor = () => {
 //if not, do nothing
 if (userAlbums) {
     return(
-        <div className={`album-list ${shouldAnimate?'animate':''}`} style={{display: 'flex',flexWrap: 'wrap',justifyContent: 'space-around'}}>
+        <div className={`album-list animate`} style={{display: 'flex',flexWrap: 'wrap',justifyContent: 'space-around'}}>
             {userAlbums.map(album => {
                 return <AlbumCard key={album.id} id={album.id} name={album.name} image={album.image} popularity={album.popularity} getAlbumTracks={getAlbumTracks}/>
             })}
@@ -48,7 +40,7 @@ if (userAlbums) {
     )
 } else {
     return(null)
-}
+  } 
 }
 
 export default AlbumList
