@@ -1,0 +1,14 @@
+.album-list {
+  z-index: 0;
+}
+
+.animate {
+  position: absolute;
+  top: 20%;
+  animation: slide-up 1s;
+}
+
+@keyframes slide-up {
+  from {margin-top: 100%;}
+  to {margin-top: 0%;}
+}

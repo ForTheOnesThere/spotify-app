@@ -1,13 +1,19 @@
-import {React} from 'react';
+import React from 'react';
 import './Welcome.css'
+
+
 
 const Welcome = (props) => {
 
-  const { userProfileUrl, userDisplayName } = props
+  // eslint-disable-next-line
+  const { userProfileUrl, userDisplayName, shouldAnimate } = props
+
+
+
 
   return(
       <div className='welcome'>
-        <h1>
+        <h1 className={`${shouldAnimate?'fade-in':''}`}>
           Welcome, {userDisplayName}.<br />
         </h1>
       </div>

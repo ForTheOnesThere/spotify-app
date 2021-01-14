@@ -1,14 +1,23 @@
 import { React, useEffect } from 'react';
 import AlbumCard from '../AlbumCard/AlbumCard.js';
+import './AlbumList.css';
 
 const AlbumList = (props) => {
 
-const { userAlbums, getAlbumTracks, scrollPosition } = props;
+const { userAlbums, getAlbumTracks, scrollPosition, shouldAnimate, checkLoad } = props;
 
 useEffect(()=>{
-  window.scrollTo({top: scrollPosition, behavior: 'auto'})
+  console.log('useeffect ran on album list')
+  
   if (userAlbums){popColor()}
 })
+
+
+useEffect(()=>{
+  checkLoad() 
+  window.scrollTo({top: scrollPosition, behavior: 'auto'}) // eslint-disable-next-line
+},[])
+
 
 //run through the album cards and set the color of the popularity text based on score
 const popColor = () => {
@@ -29,12 +38,13 @@ const popColor = () => {
 //if not, do nothing
 if (userAlbums) {
     return(
-        <div id='AlbumList' style={{display: 'flex',flexWrap: 'wrap',justifyContent: 'space-around'}}>
+        <div className={`album-list ${shouldAnimate?'animate':''}`} style={{display: 'flex',flexWrap: 'wrap',justifyContent: 'space-around'}}>
             {userAlbums.map(album => {
                 return <AlbumCard key={album.id} id={album.id} name={album.name} image={album.image} popularity={album.popularity} getAlbumTracks={getAlbumTracks}/>
             })}
-            <div onLoad={popColor}></div>
+            
         </div>
+        
     )
 } else {
     return(null)

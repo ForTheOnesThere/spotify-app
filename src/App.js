@@ -24,8 +24,9 @@ const App = () => {
   const [userProfileUrl, setUserProfileUrl] = useState(null)
   const [userAlbums, setUserAlbums] = useState(null)
   const [isAlbumLoaded, setIsAlbumLoaded] = useState(false)
-  const [loadedAlbum, setLoadedAlbum] = useState({})
+  const [loadedAlbum, setLoadedAlbum] = useState([])
   const [scrollPosition, setScrollPosition] = useState(0)
+  const [shouldAnimate, setShouldAnimate] = useState(true)
 
   //global options parameter for GET requests, take a token, and return an object with the right header
   //defaults to using the token from app state, but can be custom
@@ -41,6 +42,8 @@ const App = () => {
 
   //request for the url to be parsed if there is a query string on page load
   useEffect(() => {
+    window.localStorage.clear()
+    window.localStorage.setItem('page-loaded-once', 0);
     (window.location.search !== "")?parseUrl():console.log('Please link with Spotify') // eslint-disable-next-line
   },[])
 
@@ -84,10 +87,12 @@ const App = () => {
       setUserDisplayName(user.display_name)
       setUserProduct(user.product)
       setUserProfileUrl(user.external_urls.spotify)
+      getUserAlbums(inputToken)
     } catch(e){console.log(e)}  
+
   }
 
-  const getUserAlbums = async () => {
+  const getUserAlbums = async (inputToken) => {
     //start with no albums, and make the first request from offset=0
     let allAlbums = []
     let offset = 0
@@ -97,7 +102,7 @@ const App = () => {
     //Eventually the albums stop coming in 50s and we are done
     //For the edge case that the number required is a multiple of 50, we check if each batch is blank. If so, we are done. 
     while ((allAlbums.length % 50) === 0){
-      let response = await fetch(`https://api.spotify.com/v1/me/albums?offset=${offset}&limit=50`, GEToptions())
+      let response = await fetch(`https://api.spotify.com/v1/me/albums?offset=${offset}&limit=50`, GEToptions(inputToken))
       let albums = await response.json()
       if (albums.items.length === 0){break}
       allAlbums = allAlbums.concat(albums.items)
@@ -137,38 +142,50 @@ const App = () => {
       }
     })
 
+    document.getElementsByTagName('body')[0].style.overflow = 'hidden' 
+    document.getElementsByClassName('overlay')[0].classList.add('show')
+    
     //update state
-    setScrollPosition(window.pageYOffset)
+    //setScrollPosition(window.pageYOffset)
+    //console.log('set scroll pos to, ', window.pageYOffset )
     setLoadedAlbum(tracks)
-    setIsAlbumLoaded(true)
+   //setIsAlbumLoaded(true)
   }
 
   //clear the album in state, taking the user back to library view
   const clearAlbum = () => {
     setIsAlbumLoaded(false)
-    setLoadedAlbum({})
+    //setLoadedAlbum([])
+    document.getElementsByTagName('body')[0].style.overflow = 'visible'
+    document.getElementsByClassName('overlay')[0].classList.remove('show')
   }
 
 
+  const checkLoad = () =>{
+    let count = window.localStorage.getItem('page-loaded-once')
+    count++
+    window.localStorage.setItem('page-loaded-once', count)
+    if (count > 1) {
+      setShouldAnimate(false)
+    }
+  }
+
+  //if there is no code stored, then the user must have not have logged in, or has refused to grant access, so show them a 'connect' button
+  //else, they must have logged in, so show the app
   return (
     <div>
       <Particles params={particlesConfig} className='particles'/>
       {(code===null)
         ? <Splashscreen clientId={clientId} redirect={redirect}/>
-        : ((isAlbumLoaded)
-            ? <AlbumView loadedAlbum={loadedAlbum} clearAlbum={clearAlbum}/>
-            : <div className="App">
-                
-                <Welcome userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
-                <button style={{'margin': '3%'}} onClick={getUserAlbums}>Get Albums!</button>
-                <AlbumList scrollPosition={scrollPosition} userAlbums={userAlbums} getAlbumTracks={getAlbumTracks}/>
-              </div>
-          )
+        : <div className="App">
+            <div className={'overlay hide'}>
+              <AlbumView loadedAlbum={loadedAlbum} clearAlbum={clearAlbum}/>
+            </div>
+            <Welcome shouldAnimate={shouldAnimate} userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
+            <AlbumList checkLoad={checkLoad} shouldAnimate={shouldAnimate} scrollPosition={scrollPosition} userAlbums={userAlbums} getAlbumTracks={getAlbumTracks}/>     
+          </div>     
       }   
     </div>
-    //if there is no code stored, then the user must have not have logged in, or has refused to grant access, so show them a 'connect' button
-    //else, they must have logged in, so show the app
-   
   )  
 }
 
