@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
-import AlbumList from './components/AlbumList/AlbumList.js';
 import Splashscreen from './components/Splashscreen/Splashscreen.js';
-import Welcome from './components/Welcome/Welcome.js';
-import AlbumView from './components/AlbumView/AlbumView.js'
+import DetailOverlay from './components/DetailOverlay/DetailOverlay.js';
+import LibraryView from './components/LibraryView/LibraryView.js';
 import Particles from 'react-particles-js';
 import './App.css';
 import 'tachyons';
 
 const clientId = 'ebcbc13ca3b34ed6a4cf0bf4d7579df9';
 const redirect = 'http%3A%2F%2F192.168.1.188:3000%2F';
-
 
 const App = () => {
 
@@ -24,6 +22,8 @@ const App = () => {
   const [userProfileUrl, setUserProfileUrl] = useState(null)
   const [userAlbums, setUserAlbums] = useState(null)
   const [loadedAlbum, setLoadedAlbum] = useState([])
+  const [isSongLoaded, setIsSongLoaded] = useState(false)
+  const [loadedSong, setLoadedSong] = useState({})
 
   //global options parameter for GET requests, take a token, and return an object with the right header
   //defaults to using the token from app state, but can be custom
@@ -120,9 +120,19 @@ const App = () => {
     setUserAlbums(albumList)
   }
 
+  const getSongInfo = async (songId, songName) => {
+    console.log('getting song info for id: ', songId)
+    let response = await fetch(`https://api.spotify.com/v1/audio-features/${songId}`, GEToptions())
+    let features = await response.json()
+    features.name = songName
+    setLoadedSong(features)
+    setIsSongLoaded(true)
+  }
+
   const getAlbumTracks = async (albumId) => {
     console.log('running getAlbumTracks()')
-    
+    console.clear()
+
     //make the request for the album whose id has been passed
     let response = await fetch(`https://api.spotify.com/v1/albums/${albumId}/tracks`, GEToptions())
     let rawTracks = await response.json()
@@ -143,8 +153,12 @@ const App = () => {
 
   //hide the overlay to go back to library view
   const clearAlbum = () => {
-    document.getElementsByTagName('body')[0].style.overflow = 'visible'
     document.getElementsByClassName('overlay')[0].classList.remove('show')
+    document.getElementsByTagName('body')[0].style.overflow = 'visible'
+  }
+
+  const clearSong = () => {
+    setIsSongLoaded(false)
   }
 
   //if there is no code stored, then the user must have not have logged in, or has refused to grant access, so show them a 'connect' button
@@ -155,11 +169,8 @@ const App = () => {
       {(code===null)
         ? <Splashscreen clientId={clientId} redirect={redirect}/>
         : <div className="App">
-            <div className={'overlay hide'}>
-              <AlbumView loadedAlbum={loadedAlbum} clearAlbum={clearAlbum}/>
-            </div>
-            <Welcome userDisplayName={userDisplayName} userProfileUrl={userProfileUrl}/>
-            <AlbumList userAlbums={userAlbums} getAlbumTracks={getAlbumTracks}/>     
+            <DetailOverlay isSongLoaded={isSongLoaded} loadedSong={loadedSong} loadedAlbum={loadedAlbum} getSongInfo={getSongInfo} clearAlbum={clearAlbum} clearSong={clearSong}/>
+            <LibraryView userDisplayName={userDisplayName} userProfileUrl={userProfileUrl} userAlbums={userAlbums} getAlbumTracks={getAlbumTracks}/> 
           </div>     
       }   
     </div>

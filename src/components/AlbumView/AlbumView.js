@@ -3,16 +3,16 @@ import './AlbumView.css';
 
 const AlbumView = (props) => {
   
-const { loadedAlbum, clearAlbum } = props
+const { loadedAlbum, clearAlbum, getSongInfo } = props
 
   return (
     <div className="album-tracks">
-      <div className={'track text-center grow'} onClick={clearAlbum}>
+      <div className={'back-btn-to-lib track text-center grow'} onClick={clearAlbum}>
         BACK
       </div>
       
       {loadedAlbum.map(item => {
-        return <div key={item.id} className='track text-center grow'>
+        return <div key={item.id} onClick={()=>{getSongInfo(item.id, item.name)}} className='track text-center grow'>
                 {item.name}  <br />
                </div>
       })}
