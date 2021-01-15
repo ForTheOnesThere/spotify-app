@@ -1,0 +1,25 @@
+.splash {
+  
+}
+
+.btn {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 40vh 20vw 40vh 20vw;
+  color: rgb(255, 253, 231);
+  border: 1px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: xx-large;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.btn:hover {
+  color: yellow;
+  border: 1px solid yellow;
+  background-color: rgba(0,0,0,0.5);
+}

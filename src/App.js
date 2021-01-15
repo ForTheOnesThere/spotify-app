@@ -9,18 +9,14 @@ import { Chart } from "react-chartjs-2";
 Chart.defaults.global.legend.display = false;
 
 const clientId = 'ebcbc13ca3b34ed6a4cf0bf4d7579df9';
-const redirect = 'http%3A%2F%2F192.168.1.188:3000%2F';
+const redirect = 'https%3A%2F%2Fwww.jamescockayne.co.uk%2Fspotify-app%2F';
 
 const App = () => {
 
   //hooks for state
   const [code, setCode] = useState(null)
-  const [token, setToken] = useState(null) // eslint-disable-next-line 
-  //const [refreshToken, setRefreshToken] = useState(null)
-  //const [expiry, setExpiry] = useState(null)
-  //const [requestTime, setRequestTime] = useState(null)
+  const [token, setToken] = useState(null)
   const [userDisplayName, setUserDisplayName] = useState('Loading...')
-  //const [userProduct, setUserProduct] = useState(null)
   const [userProfileUrl, setUserProfileUrl] = useState(null)
   const [userAlbums, setUserAlbums] = useState(null)
   const [loadedAlbum, setLoadedAlbum] = useState([])
@@ -67,9 +63,6 @@ const App = () => {
     let response = await rawResponse.json()
 
     try {
-      //setRequestTime(new Date())
-      //setExpiry(response.expires_in)
-      //setRefreshToken(response.refresh_token) 
       setToken(response.access_token)
       
       //get the user's profile with the token we just recieved, because the default value of token here comes back as blank
@@ -83,7 +76,6 @@ const App = () => {
       let response = await fetch('https://api.spotify.com/v1/me', GEToptions(inputToken))
       let user = await response.json()  
       setUserDisplayName(user.display_name)
-      //setUserProduct(user.product)
       setUserProfileUrl(user.external_urls.spotify)
       document.getElementById('welcome-text').classList.remove('hide-welcome')
       document.getElementById('welcome-text').classList.add('fade-in')
@@ -162,8 +154,6 @@ const App = () => {
   const clearSong = () => {
     setIsSongLoaded(false)
   }
-
- 
 
   //if there is no code stored, then the user must have not have logged in, or has refused to grant access, so show them a 'connect' button
   //else, they must have logged in, so show the app
