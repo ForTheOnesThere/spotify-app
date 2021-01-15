@@ -5,6 +5,12 @@
   opacity: 0.9;
   height: 100vh;
   z-index: 2;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.overlay::-webkit-scrollbar {
+  display: none;
 }
 
 .hide {

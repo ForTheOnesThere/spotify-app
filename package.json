@@ -1,6 +1,6 @@
 {
   "homepage": "http://fortheonesthere.github.io/spotify-app",
-  "name": "spotify-app",
+  "name": "spotify-visualised",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
