@@ -12,6 +12,7 @@
   justify-content: center;
   align-items: center;
   font-size: xx-large;
+  cursor: pointer;
 }
 
 .btn:hover {
