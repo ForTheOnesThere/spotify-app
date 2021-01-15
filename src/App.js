@@ -16,11 +16,11 @@ const App = () => {
   //hooks for state
   const [code, setCode] = useState(null)
   const [token, setToken] = useState(null) // eslint-disable-next-line 
-  const [refreshToken, setRefreshToken] = useState(null) // eslint-disable-next-line 
-  const [expiry, setExpiry] = useState(null) // eslint-disable-next-line 
-  const [requestTime, setRequestTime] = useState(null)
-  const [userDisplayName, setUserDisplayName] = useState('Loading...') // eslint-disable-next-line 
-  const [userProduct, setUserProduct] = useState(null)
+  //const [refreshToken, setRefreshToken] = useState(null)
+  //const [expiry, setExpiry] = useState(null)
+  //const [requestTime, setRequestTime] = useState(null)
+  const [userDisplayName, setUserDisplayName] = useState('Loading...')
+  //const [userProduct, setUserProduct] = useState(null)
   const [userProfileUrl, setUserProfileUrl] = useState(null)
   const [userAlbums, setUserAlbums] = useState(null)
   const [loadedAlbum, setLoadedAlbum] = useState([])
@@ -67,10 +67,11 @@ const App = () => {
     let response = await rawResponse.json()
 
     try {
-      setRequestTime(new Date())
-      setExpiry(response.expires_in)
+      //setRequestTime(new Date())
+      //setExpiry(response.expires_in)
+      //setRefreshToken(response.refresh_token) 
       setToken(response.access_token)
-      setRefreshToken(response.refresh_token) 
+      
       //get the user's profile with the token we just recieved, because the default value of token here comes back as blank
       getUserDataOnInit(response.access_token)  
     } catch(e){console.log(e)}
@@ -82,8 +83,10 @@ const App = () => {
       let response = await fetch('https://api.spotify.com/v1/me', GEToptions(inputToken))
       let user = await response.json()  
       setUserDisplayName(user.display_name)
-      setUserProduct(user.product)
+      //setUserProduct(user.product)
       setUserProfileUrl(user.external_urls.spotify)
+      document.getElementById('welcome-text').classList.remove('hide-welcome')
+      document.getElementById('welcome-text').classList.add('fade-in')
       getUserAlbums(inputToken)
     } catch(e){console.log(e)}  
 
@@ -123,7 +126,6 @@ const App = () => {
   }
 
   const getSongInfo = async (songId, songName) => {
-    console.log('getting song info for id: ', songId)
     let response = await fetch(`https://api.spotify.com/v1/audio-features/${songId}`, GEToptions())
     let features = await response.json()
     features.name = songName
@@ -132,8 +134,7 @@ const App = () => {
   }
 
   const getAlbumTracks = async (albumId) => {
-    console.log('running getAlbumTracks()')
-    console.clear()
+    document.getElementsByTagName('html')[0].style.overflow = 'hidden'
 
     //make the request for the album whose id has been passed
     let response = await fetch(`https://api.spotify.com/v1/albums/${albumId}/tracks`, GEToptions())
@@ -149,7 +150,6 @@ const App = () => {
       }
     })
     setLoadedAlbum(tracks)
-    document.getElementsByTagName('html')[0].style.overflow = 'hidden' 
     document.getElementsByClassName('overlay')[0].classList.add('show')
   }
 

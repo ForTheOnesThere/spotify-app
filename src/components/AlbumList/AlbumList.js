@@ -7,7 +7,6 @@ const AlbumList = (props) => {
 const { userAlbums, getAlbumTracks} = props;
 
 useEffect(()=>{
-  console.log('useeffect ran on album list')
   if (userAlbums){popColor()}
 })
 

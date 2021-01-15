@@ -13,11 +13,16 @@
   margin-top: 0px;
   margin-bottom: 1vh;
   margin-left: 1vh;
-  font-size: 4rem;
+  font-size: 5vh;
   font-family: 'Roboto', sans-serif;
   color: #d9e00b;
   font-weight: 100;
 }
+
+.hide-welcome {
+  opacity: 0;
+}
+
 .fade-in {
   animation: fadeIn ease 2s;
 }

@@ -10,7 +10,7 @@ const Welcome = (props) => {
 
   return(
       <div className='welcome'>
-        <h1 className={'fade-in'}>
+        <h1 id={'welcome-text'} className={'hide-welcome'}>
           Welcome, {userDisplayName}.<br />
         </h1>
       </div>

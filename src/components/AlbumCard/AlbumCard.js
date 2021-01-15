@@ -6,7 +6,7 @@ const AlbumCard = (props) => {
 const { id, name, image, popularity, getAlbumTracks } = props
 
   return(
-    <div onClick={()=>{getAlbumTracks(id)}} className="card grow br2 ba dark-gray b--black-10 mv2 mv4-ns w-50 ma3-ns w-20-ns center">
+    <div onClick={()=>{getAlbumTracks(id)}} className="grow br2 ba dark-gray b--black-10 mv2 mv4-ns w-50 ma3-ns w-20-ns center card">
       <img  src={image} className="db w-100 br2 br--top image" alt="Album art"/>
       <div className="pa2 ph3-ns pb3-ns background ">
         <div className="dt w-100 mt1 ">
