@@ -9,7 +9,7 @@ import { Chart } from "react-chartjs-2";
 Chart.defaults.global.legend.display = false;
 
 const clientId = 'ebcbc13ca3b34ed6a4cf0bf4d7579df9';
-const redirect = 'http%3A%2F%2F192.168.1.188:3000%2F';
+const redirect = 'https%3A%2F%2Fwww.jamescockayne.co.uk%2Fspotify-app%2F';
 
 const App = () => {
 
