@@ -5,6 +5,8 @@ import LibraryView from './components/LibraryView/LibraryView.js';
 import Particles from 'react-particles-js';
 import './App.css';
 import 'tachyons';
+import { Chart } from "react-chartjs-2";  
+Chart.defaults.global.legend.display = false;
 
 const clientId = 'ebcbc13ca3b34ed6a4cf0bf4d7579df9';
 const redirect = 'http%3A%2F%2F192.168.1.188:3000%2F';
@@ -147,24 +149,26 @@ const App = () => {
       }
     })
     setLoadedAlbum(tracks)
-    document.getElementsByTagName('body')[0].style.overflow = 'hidden' 
+    document.getElementsByTagName('html')[0].style.overflow = 'hidden' 
     document.getElementsByClassName('overlay')[0].classList.add('show')
   }
 
   //hide the overlay to go back to library view
   const clearAlbum = () => {
     document.getElementsByClassName('overlay')[0].classList.remove('show')
-    document.getElementsByTagName('body')[0].style.overflow = 'visible'
+    document.getElementsByTagName('html')[0].style.overflow = 'visible'
   }
 
   const clearSong = () => {
     setIsSongLoaded(false)
   }
 
+ 
+
   //if there is no code stored, then the user must have not have logged in, or has refused to grant access, so show them a 'connect' button
   //else, they must have logged in, so show the app
   return (
-    <div>
+    <div className={'container'}>
       <Particles params={particlesConfig} className='particles'/>
       {(code===null)
         ? <Splashscreen clientId={clientId} redirect={redirect}/>
