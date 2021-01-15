@@ -4,7 +4,6 @@
 
 .animate {
   position: absolute;
-  top: 20%;
   animation: slide-up-albums 1s;
 }
 
